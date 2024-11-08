@@ -1,0 +1,45 @@
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+      - migrations
+    ports:
+      - 8080:8080
+    networks:
+      - test-net
+    env_file:
+      - .env
+
+  postgres:
+    image: postgres:17-alpine3.20
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - test-net
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  migrations:
+    build:
+      context: .
+      dockerfile: Dockerfile.migration
+    networks:
+      - test-net
+    depends_on:
+      - postgres
+    command: ["--connection", "${CONNECTION_STRING}"]
+    env_file:
+      - .env
+
+networks:
+  test-net:
+volumes:
+  pg_data:

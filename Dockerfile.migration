@@ -1,0 +1,5 @@
+FROM mcr.microsoft.com/dotnet/sdk:8.0.403
+WORKDIR /app
+COPY ["MigrationBundleDemo/efbundle", "efbundle"]
+RUN chmod +x /app/efbundle
+ENTRYPOINT [ "/app/efbundle" ]
